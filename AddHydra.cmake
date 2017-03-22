@@ -9,9 +9,9 @@ download_project(PROJ                hydra
 
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(HYDRA_CXX_FLAGS ${HYDRA_CXX_FLAGS} "-march=native -O3")
+    set(HYDRA_CXX_FLAGS "-march=native;-O3")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(HYDRA_CXX_FLAGS "-xHost -O3 -march=native")
+    set(HYDRA_CXX_FLAGS "-xHost;-O3;-march=native")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(HYDRA_CXX_FLAGS "-O3")
 else()
@@ -42,11 +42,11 @@ endif()
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
-    add_libarary(omp INTERFACE)
+    add_library(omp INTERFACE)
     target_compile_options(omp INTERFACE "${OpenMP_CXX_FLAGS}")
     target_link_libraries(omp INTERFACE "${OpenMP_CXX_FLAGS}")
 
-    add_libarary(Hydra_OMP INTERFACE)
+    add_library(Hydra_OMP INTERFACE)
     target_compile_definitions(Hydra_OMP INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP"
         INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP")
     target_link_libraries(Hydra_OMP INTERFACE Hydra_Core omp)
