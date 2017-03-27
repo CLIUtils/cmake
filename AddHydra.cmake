@@ -1,5 +1,5 @@
 include(DownloadProject)
-message(STATUS "Downloading Hydra as needed")
+message(STATUS "Downloading Hydra if needed")
 download_project(PROJ                hydra
                  GIT_REPOSITORY      https://github.com/AAAlvesJr/Hydra.git
 		         GIT_TAG             master

@@ -1,6 +1,6 @@
 
 include(DownloadProject)
-message(STATUS "Downloading Rang as needed")
+message(STATUS "Downloading Rang if needed")
 download_project(PROJ                rang
                  GIT_REPOSITORY      https://github.com/agauniyal/rang.git
 		         GIT_TAG             master
