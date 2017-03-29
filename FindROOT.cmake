@@ -8,6 +8,7 @@
 # ROOT_<name>_LIBRARY Full path to the library <name>
 # ROOT_LIBRARY_DIR    PATH to the library directory
 # ROOT_DEFINITIONS    Compiler definitions and flags
+# ROOT_LINK_FLAGS     Linker flags
 #
 # The modern CMake 3 imported targets are also created:
 # ROOT::ROOT (Most common libraries)
@@ -15,6 +16,7 @@
 #
 # Updated by K. Smith (ksmith37@nd.edu) to properly handle
 #  dependencies in ROOT_GENERATE_DICTIONARY
+# Updated by H. Schreiner (hschrein@cern.ch) to support CMake 3 syntax
 
 find_program(ROOT_CONFIG_EXECUTABLE root-config
   PATHS $ENV{ROOTSYS}/bin)
@@ -42,6 +44,21 @@ if(ROOT_CONFIG_EXECUTABLE)
         OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(ROOT_LIBRARY_DIRS ${ROOT_LIBRARY_DIR})
 
+    execute_process(
+        COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags
+        OUTPUT_VARIABLE ROOT_DEFINITIONS
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX REPLACE "(^|[ ]*)-I[^ ]*" "" ROOT_DEFINITIONS ${ROOT_DEFINITIONS})
+    set(ROOT_DEF_LIST ${ROOT_DEFINITIONS})
+    separate_arguments(ROOT_DEF_LIST)
+
+    execute_process(
+        COMMAND ${ROOT_CONFIG_EXECUTABLE} --ldflags
+        OUTPUT_VARIABLE ROOT_LINK_FLAGS
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(ROOT_LINK_LIST ${ROOT_LINK_FLAGS})
+    separate_arguments(ROOT_LINK_LIST)
+
     file(GLOB ROOT_LIBFILELIST
         LIST_DIRECTORIES false
         RELATIVE "${ROOT_LIBRARY_DIR}"
@@ -65,10 +82,11 @@ if(ROOT_CONFIG_EXECUTABLE)
         mark_as_advanced(ROOT_${_cpt}_LIBRARY)
         add_library(ROOT::${_cpt} SHARED IMPORTED)
         set_target_properties(ROOT::${_cpt} PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
-        set_target_properties(ROOT::${_cpt} PROPERTIES
-                    IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
-                    IMPORTED_LOCATION "${ROOT_${_cpt}_LIBRARY}")
+            INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}"
+            IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+            IMPORTED_LOCATION "${ROOT_${_cpt}_LIBRARY}"
+            INTERFACE_COMPILE_OPTIONS "${ROOT_DEF_LIST}"
+            INTERFACE_LINK_LIBRARIES "${ROOT_LINK_LIST}")
       endif()
     endforeach()
 
@@ -89,11 +107,6 @@ if(ROOT_CONFIG_EXECUTABLE)
 
     list(REMOVE_DUPLICATES ROOT_LIBRARIES)
 
-    execute_process(
-        COMMAND ${ROOT_CONFIG_EXECUTABLE} --cflags
-        OUTPUT_VARIABLE ROOT_DEFINITIONS
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    string(REGEX REPLACE "(^|[ ]*)-I[^ ]*" " " ROOT_DEFINITIONS ${ROOT_DEFINITIONS})
 
     execute_process(
       COMMAND ${ROOT_CONFIG_EXECUTABLE} --features
