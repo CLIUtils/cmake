@@ -1,5 +1,16 @@
-# cmake
-A set of cmake modules to assist in building code, with some tools for common general use packages and a few High Energy Physics packages. These tools are built around modern CMake (See [The Ultimate Guide to Modern CMake]), which allows clean, simple user CMake files. Although modern CMake is still a little odd in a few places, it is relatively clean and descriptive.
+# CMake 3 Tools
+A set of [CMake] modules to assist in building code, with some tools for common general use packages and a few High Energy Physics packages. These tools are built around modern CMake (See [The Ultimate Guide to Modern CMake]), which allows clean, simple user CMake files. Although modern CMake is still a little odd in a few places, it is relatively clean and descriptive.
+
+## Installing CMake 3 anywhere
+
+[CMake] is incredibly easy to install. The following line will install the latest 3.7.2 on Linux to your `.local` directory:
+
+```bash
+wget -qO- "https://cmake.org/files/v3.7/cmake-3.7.2-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C ~/.local
+```
+If you don't want to put this in the `.local` directory, simply replace with any pre-existing directory, and add `<directory>/bin` to your `PATH`.
+See the other files in [CMake downloads] to find similar installers for Mac and Windows, as well as the latest development versions.
+
 
 ## AddGoogleTest
 
@@ -51,7 +62,8 @@ If you are using CMake 3.8 (not yet released), you could replace the C++11 selec
 target_compile_features(MyExecutable PUBLIC cxx_std_11)
 ```
 
-
+[CMake]:           https://cmake.org
+[CMake downloads]: https://cmake.org/download/
 [The Ultimate Guide to Modern CMake]: https://rix0r.nl/blog/2015/08/13/cmake-guide/
 [GoogleTest]:      https://github.com/google/googletest
 [ROOT]:            https://root.cern.ch
