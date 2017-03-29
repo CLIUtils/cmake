@@ -1,7 +1,7 @@
 # cmake
 A set of cmake modules to assist in building code, with some tools for common general use packages and a few High Energy Physics packages. These tools are built around modern CMake (See [The Ultimate Guide to Modern CMake]), which allows clean, simple user CMake files. Although modern CMake is still a little odd in a few places, it is relatively clean and descriptive.
 
-## AddGoogletest
+## AddGoogleTest
 
 This is a downloader for [GoogleTest], based on the excellent [DownloadProject] tool. Downloading a copy for each project is the recommended way to use GoogleTest (so much so, in fact, that they have disabled the automatic CMake install target), so this respects that design decision. This method downloads the project at configure time, so that IDE's correctly find the libraries. Using it is simple:
 
@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 enable_testing() # Must be in main file
 
-include(AddGoogletest) # Could be in /tests/CMakeLists.txt
+include(AddGoogleTest) # Could be in /tests/CMakeLists.txt
 add_executable(SimpleTest SimpleTest.cu)
 add_gtest(SimpleTest)
 ```
