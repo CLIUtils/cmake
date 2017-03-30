@@ -20,7 +20,7 @@ endif()
 
 add_library(Hydra_Core INTERFACE)
 target_include_directories(Hydra_Core INTERFACE ${hydra_SOURCE_DIR})
-target_compile_options(Hydra_Core INTERFACE ${HYDRA_CXX_FLAGS})
+#target_compile_options(Hydra_Core INTERFACE ${HYDRA_CXX_FLAGS})
 target_compile_definitions(Hydra_Core INTERFACE "THRUST_VARIADIC_TUPLE")
 
 
@@ -28,7 +28,7 @@ add_library(Hydra_CPP INTERFACE)
 target_compile_definitions(Hydra_CPP INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_CPP"
                                      INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP")
 target_link_libraries(Hydra_CPP INTERFACE Hydra_Core)
-
+add_library(Hydra::CPP ALIAS Hydra_CPP)
 
 
 find_package(TBB)
@@ -37,6 +37,7 @@ if(TBB_FOUND)
     target_compile_definitions(Hydra_TBB INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_TBB"
                                          INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_TBB")
     target_link_libraries(Hydra_TBB INTERFACE Hydra_Core tbb)
+add_library(Hydra::TBB ALIAS Hydra_TBB)
 endif()
 
 
@@ -50,4 +51,32 @@ if(OPENMP_FOUND)
     target_compile_definitions(Hydra_OMP INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP"
         INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP")
     target_link_libraries(Hydra_OMP INTERFACE Hydra_Core omp)
+    add_library(Hydra::OMP ALIAS Hydra_OMP)
+endif()
+
+find_package(CUDA 8.0)
+if(CUDA_FOUND)
+    set(HYDRA_CUDA_FLAGS --std=c++11
+         --expt-relaxed-constexpr; -ftemplate-backtrace-limit=0;
+         --expt-extended-lambda; --relocatable-device-code=false;
+         --generate-line-info)
+
+    add_library(Hydra_CUDA INTERFACE)
+    if(OPENMP_FOUND)
+        target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP")
+        target_link_libraries(Hydra_OMP INTERFACE omp)
+    elseif(TBB_FOUND)
+        target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_TBB")
+        target_link_libraries(Hydra_OMP INTERFACE tbb)
+    else()
+        target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_CPP")
+    endif()
+    target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA")
+    target_compile_options(Hydra_CUDA INTERFACE "${HYDRA_CUDA_FLAGS}")
+    target_compile_options(Hydra_CUDA INTERFACE
+                             "-Xptxas=-fmad=true,-dlcm=cg,--opt-level=4")
+    #target_link_libraries(Hydra_OMP INTERFACE Hydra_Core)
+    target_include_directories(Hydra_CUDA INTERFACE ${hydra_SOURCE_DIR})
+    target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_VARIADIC_TUPLE")
+    add_library(Hydra::CUDA ALIAS Hydra_CUDA)
 endif()
