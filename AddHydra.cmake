@@ -7,20 +7,22 @@ download_project(PROJ                hydra
                  QUIET
 )
 
+if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
+    message(STATUS "You will get best perfomance from a release build!")
+endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(HYDRA_CXX_FLAGS "-march=native;-O3")
+    set(HYDRA_CXX_FLAGS "-march=native")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(HYDRA_CXX_FLAGS "-xHost;-O3;-march=native")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(HYDRA_CXX_FLAGS "-O3")
-else()
-    set(HYDRA_CXX_FLAGS "-O3")
+    set(HYDRA_CXX_FLAGS "-xHost;-march=native")
 endif()
 
 add_library(Hydra_Core INTERFACE)
 target_include_directories(Hydra_Core INTERFACE ${hydra_SOURCE_DIR})
-#target_compile_options(Hydra_Core INTERFACE ${HYDRA_CXX_FLAGS})
+target_compile_features(Hydra_Core INTERFACE cxx_std_11)
+set_target_properties(Hydra_Core
+    PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+target_compile_options(Hydra_Core INTERFACE $<$<CONFIG:Release>:${HYDRA_CXX_FLAGS}>)
 target_compile_definitions(Hydra_Core INTERFACE "THRUST_VARIADIC_TUPLE")
 
 
@@ -54,12 +56,18 @@ if(OPENMP_FOUND)
     add_library(Hydra::OMP ALIAS Hydra_OMP)
 endif()
 
+set(HYDRA_ARCH Auto CACHE STRING "The GPU Archetecture, can be Auto, All, Common, a number, or a name")
+
 find_package(CUDA 8.0)
 if(CUDA_FOUND)
-    set(HYDRA_CUDA_FLAGS --std=c++11
+    set(HYDRA_CUDA_FLAGS
          --expt-relaxed-constexpr; -ftemplate-backtrace-limit=0;
          --expt-extended-lambda; --relocatable-device-code=false;
          --generate-line-info)
+
+     cuda_select_nvcc_arch_flags(ARCH_FLAGS ${HYDRA_ARCH})
+     list(APPEND HYDRA_CUDA_FLAGS ${ARCH_FLAGS})
+     message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS}")
 
     add_library(Hydra_CUDA INTERFACE)
     if(OPENMP_FOUND)
@@ -72,6 +80,7 @@ if(CUDA_FOUND)
         target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_CPP")
     endif()
     target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA")
+    target_compile_features(Hydra_CUDA INTERFACE cxx_std_11)
     target_compile_options(Hydra_CUDA INTERFACE "${HYDRA_CUDA_FLAGS}")
     target_compile_options(Hydra_CUDA INTERFACE
                              "-Xptxas=-fmad=true,-dlcm=cg,--opt-level=4")
