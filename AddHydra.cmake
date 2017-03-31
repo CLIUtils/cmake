@@ -1,5 +1,6 @@
 # - Add HYDRA
 # Add the HYDRA headers. Set hydra_SOURCE_DIR to remove download, or HYDRA_URL and HYDRA_TAG to control the download location.
+# Set HYDRA_MT_HOST to ON to activate using OpenMP or TBB as the host with CUDA device.
 #
 # Creates the following interface targets (if OMP, TBB, and/or CUDA are found):
 # 
@@ -83,6 +84,7 @@ if(OPENMP_FOUND)
 endif()
 
 set(HYDRA_ARCH Auto CACHE STRING "The GPU Archetecture, can be Auto, All, Common, a number, or a name")
+set(HYDRA_MT_HOST OFF CACHE BOOL "Multithreaded host for cuda compilation")
 
 find_package(CUDA 8.0)
 if(CUDA_FOUND)
@@ -95,10 +97,10 @@ if(CUDA_FOUND)
     message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS}")
 
     add_library(Hydra_CUDA INTERFACE)
-    if(OPENMP_FOUND)
+    if(HYDRA_MT_HOST AND OPENMP_FOUND)
         target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP")
         target_link_libraries(Hydra_OMP INTERFACE omp)
-    elseif(TBB_FOUND)
+    elseif(HYDRA_MT_HOST AND TBB_FOUND)
         target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_TBB")
         target_link_libraries(Hydra_OMP INTERFACE tbb)
     else()
