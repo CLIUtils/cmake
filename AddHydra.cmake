@@ -17,8 +17,8 @@ cmake_minimum_required(VERSION 3.8)
 include(DownloadProject)
 
 if(NOT hydra_SOURCE_DIR)
-    set(HYDRA_URL CACHE STRING "https://github.com/MultithreadCorner/Hydra.git")
-    set(HYDRA_TAG CACHE STRING "master")
+    set(HYDRA_URL "https://github.com/MultithreadCorner/Hydra.git" CACHE STRING "The URL of the git repo") 
+    set(HYDRA_TAG "master" CACHE STRING "The branch/tag to get, branch should be proceded by -b")
 
     message(STATUS "Downloading Hydra if needed")
     download_project(PROJ                hydra
