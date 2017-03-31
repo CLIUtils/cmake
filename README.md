@@ -62,9 +62,14 @@ If you are using CMake 3.8 (not yet released), you could replace the C++11 selec
 target_compile_features(MyExecutable PUBLIC cxx_std_11)
 ```
 
+## AddHydra
+
+See the [example repository][HydraUser] (under development) for an example of the CMake 3.8 AddHydra module.
+
 [CMake]:           https://cmake.org
 [CMake downloads]: https://cmake.org/download/
 [The Ultimate Guide to Modern CMake]: https://rix0r.nl/blog/2015/08/13/cmake-guide/
 [GoogleTest]:      https://github.com/google/googletest
 [ROOT]:            https://root.cern.ch
 [DownloadProject]: https://github.com/Crascit/DownloadProject
+[HydraUser]:       https://github.com/henryiii/HydraExample.git
