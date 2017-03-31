@@ -1,11 +1,33 @@
+# - Add HYDRA
+# Add the HYDRA headers. Set hydra_SOURCE_DIR to remove download, or HYDRA_URL and HYDRA_TAG to control the download location.
+#
+# Creates the following interface targets (if OMP, TBB, and/or CUDA are found):
+# 
+# Hydra::CPP
+# Hydra::TBB
+# Hydra::OMP
+# Hydra::CUDA (requires CUDA language to be activated)
+#
+# hydra_add_executable(MyProg prog.cpp) will add a MyProg master target and
+# that will be inherited by the sub-targets for each platform. Use add on this target
+# to control all four. The sub targets will be MyProg_CPP, MyProg_TBB, MyProg_OMP, and MyProg_CUDA.
+
+cmake_minimum_required(VERSION 3.8)
+
 include(DownloadProject)
-message(STATUS "Downloading Hydra if needed")
-download_project(PROJ                hydra
-                 GIT_REPOSITORY      https://github.com/AAAlvesJr/Hydra.git
-		         GIT_TAG             master
-                 UPDATE_DISCONNECTED 1
-                 QUIET
-)
+
+if(NOT hydra_SOURCE_DIR)
+    set(HYDRA_URL CACHE STRING "https://github.com/MultithreadCorner/Hydra.git")
+    set(HYDRA_TAG CACHE STRING "master")
+
+    message(STATUS "Downloading Hydra if needed")
+    download_project(PROJ                hydra
+                     GIT_REPOSITORY      ${HYDRA_URL}
+                     GIT_TAG             ${HYDRA_TAG}
+                     UPDATE_DISCONNECTED 1
+                     QUIET
+    )
+endif()
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
     message(STATUS "You will get best perfomance from a release build!")
@@ -22,14 +44,18 @@ target_include_directories(Hydra_Core INTERFACE ${hydra_SOURCE_DIR})
 target_compile_features(Hydra_Core INTERFACE cxx_std_11)
 set_target_properties(Hydra_Core
     PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
-target_compile_options(Hydra_Core INTERFACE $<$<CONFIG:Release>:${HYDRA_CXX_FLAGS}>)
 target_compile_definitions(Hydra_Core INTERFACE "THRUST_VARIADIC_TUPLE")
+
+
+add_library(Hydra_CPU INTERFACE)
+target_link_libraries(Hydra_CPU INTERFACE Hydra_Core)
+target_compile_options(Hydra_CPU INTERFACE $<$<CONFIG:Release>:${HYDRA_CXX_FLAGS}>)
 
 
 add_library(Hydra_CPP INTERFACE)
 target_compile_definitions(Hydra_CPP INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_CPP"
                                      INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP")
-target_link_libraries(Hydra_CPP INTERFACE Hydra_Core)
+target_link_libraries(Hydra_CPP INTERFACE Hydra_CPU)
 add_library(Hydra::CPP ALIAS Hydra_CPP)
 
 
@@ -38,7 +64,7 @@ if(TBB_FOUND)
     add_library(Hydra_TBB INTERFACE)
     target_compile_definitions(Hydra_TBB INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_TBB"
                                          INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_TBB")
-    target_link_libraries(Hydra_TBB INTERFACE Hydra_Core tbb)
+    target_link_libraries(Hydra_TBB INTERFACE Hydra_CPU tbb)
 add_library(Hydra::TBB ALIAS Hydra_TBB)
 endif()
 
@@ -52,7 +78,7 @@ if(OPENMP_FOUND)
     add_library(Hydra_OMP INTERFACE)
     target_compile_definitions(Hydra_OMP INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_OMP"
         INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP")
-    target_link_libraries(Hydra_OMP INTERFACE Hydra_Core omp)
+    target_link_libraries(Hydra_OMP INTERFACE Hydra_CPU omp)
     add_library(Hydra::OMP ALIAS Hydra_OMP)
 endif()
 
@@ -65,8 +91,8 @@ if(CUDA_FOUND)
          --expt-extended-lambda; --relocatable-device-code=false;
          --generate-line-info)
 
-     cuda_select_nvcc_arch_flags(ARCH_FLAGS ${HYDRA_ARCH})
-     message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS}")
+    cuda_select_nvcc_arch_flags(ARCH_FLAGS ${HYDRA_ARCH})
+    message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS}")
 
     add_library(Hydra_CUDA INTERFACE)
     if(OPENMP_FOUND)
@@ -79,13 +105,10 @@ if(CUDA_FOUND)
         target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_CPP")
     endif()
     target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA")
-    target_compile_features(Hydra_CUDA INTERFACE cxx_std_11)
-    target_compile_options(Hydra_CUDA INTERFACE "${HYDRA_CUDA_FLAGS}" "${ARCH_FLAGS}")
     target_compile_options(Hydra_CUDA INTERFACE
+                             "${HYDRA_CUDA_FLAGS}" "${ARCH_FLAGS}"
                              "-Xptxas=-fmad=true,-dlcm=cg,--opt-level=4")
-    #target_link_libraries(Hydra_OMP INTERFACE Hydra_Core)
-    target_include_directories(Hydra_CUDA INTERFACE ${hydra_SOURCE_DIR})
-    target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_VARIADIC_TUPLE")
+    target_link_libraries(Hydra_CUDA INTERFACE Hydra_Core)
     add_library(Hydra::CUDA ALIAS Hydra_CUDA)
 endif()
 
