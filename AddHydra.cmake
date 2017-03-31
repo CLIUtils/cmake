@@ -94,7 +94,7 @@ if(CUDA_FOUND)
          --generate-line-info)
 
     cuda_select_nvcc_arch_flags(ARCH_FLAGS ${HYDRA_ARCH})
-    message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS}")
+    message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS_readable}")
 
     add_library(Hydra_CUDA INTERFACE)
     if(HYDRA_MT_HOST AND OPENMP_FOUND)
