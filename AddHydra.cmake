@@ -86,7 +86,7 @@ endif()
 set(HYDRA_ARCH Auto CACHE STRING "The GPU Archetecture, can be Auto, All, Common, a number, or a name")
 set(HYDRA_MT_HOST OFF CACHE BOOL "Multithreaded host for cuda compilation")
 
-option(HYDRA_USE_CUDA ON "Turn off to disable CUDA search")
+option(HYDRA_USE_CUDA "Turn off to disable CUDA search" ON)
 
 if(HYDRA_USE_CUDA)
 find_package(CUDA 8.0)
