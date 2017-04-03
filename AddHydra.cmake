@@ -86,6 +86,9 @@ endif()
 set(HYDRA_ARCH Auto CACHE STRING "The GPU Archetecture, can be Auto, All, Common, a number, or a name")
 set(HYDRA_MT_HOST OFF CACHE BOOL "Multithreaded host for cuda compilation")
 
+option(HYDRA_USE_CUDA ON "Turn off to disable CUDA search")
+
+if(HYDRA_USE_CUDA)
 find_package(CUDA 8.0)
 if(CUDA_FOUND)
     set(HYDRA_CUDA_FLAGS
@@ -112,6 +115,7 @@ if(CUDA_FOUND)
                              "-Xptxas=-fmad=true,-dlcm=cg,--opt-level=4")
     target_link_libraries(Hydra_CUDA INTERFACE Hydra_Core)
     add_library(Hydra::CUDA ALIAS Hydra_CUDA)
+endif()
 endif()
 
 macro(hydra_add_executable MYNAME) 
