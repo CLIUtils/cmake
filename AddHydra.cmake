@@ -97,7 +97,11 @@ if(CUDA_FOUND)
          --generate-line-info)
 
     cuda_select_nvcc_arch_flags(ARCH_FLAGS ${HYDRA_ARCH})
+    string(REPLACE ";" " " ARCH_FLAGS "${ARCH_FLAGS}")
     message(STATUS "Hydra is compiling for GPU arch: ${ARCH_FLAGS_readable}")
+    message(STATUS "Hydra flags to be added: ${ARCH_FLAGS}")
+    list(APPEND CMAKE_CUDA_FLAGS "${ARCH_FLAGS}")
+    
 
     add_library(Hydra_CUDA INTERFACE)
     if(HYDRA_MT_HOST AND OPENMP_FOUND)
@@ -111,7 +115,7 @@ if(CUDA_FOUND)
     endif()
     target_compile_definitions(Hydra_CUDA INTERFACE "THRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA")
     target_compile_options(Hydra_CUDA INTERFACE
-                             "${HYDRA_CUDA_FLAGS}" "${ARCH_FLAGS}"
+                             "${HYDRA_CUDA_FLAGS}"
                              "-Xptxas=-fmad=true,-dlcm=cg,--opt-level=4")
     target_link_libraries(Hydra_CUDA INTERFACE Hydra_Core)
     add_library(Hydra::CUDA ALIAS Hydra_CUDA)
