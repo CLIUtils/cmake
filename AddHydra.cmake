@@ -34,11 +34,7 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
     message(STATUS "You will get best perfomance from a release build!")
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(HYDRA_CXX_FLAGS "-march=native")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(HYDRA_CXX_FLAGS "-xHost;-march=native")
-endif()
+set(HYDRA_CXX_FLAGS "-march=native")
 
 add_library(Hydra_Core INTERFACE)
 target_include_directories(Hydra_Core INTERFACE ${hydra_SOURCE_DIR})
