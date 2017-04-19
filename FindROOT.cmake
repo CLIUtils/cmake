@@ -58,6 +58,7 @@ if(ROOT_CONFIG_EXECUTABLE)
         OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(ROOT_LINK_LIST ${ROOT_LINK_FLAGS})
     separate_arguments(ROOT_LINK_LIST)
+
     # Needed because ROOT on Mac does not use Mac conventions
     set(CMAKE_SHARED_LIBRARY_SUFFIX .so)
 
@@ -65,6 +66,10 @@ if(ROOT_CONFIG_EXECUTABLE)
         LIST_DIRECTORIES false
         RELATIVE "${ROOT_LIBRARY_DIR}"
         "${ROOT_LIBRARY_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}*${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    
+    if(NOT ROOT_LIBFILELIST)
+        message(FATAL_ERROR "ROOT libraries not found at ${ROOT_LIBRARY_DIR}")
+    endif()
 
     set(ROOT_ALLLIBS "")
     foreach(_file ${ROOT_LIBFILELIST})
