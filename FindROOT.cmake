@@ -58,6 +58,8 @@ if(ROOT_CONFIG_EXECUTABLE)
         OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(ROOT_LINK_LIST ${ROOT_LINK_FLAGS})
     separate_arguments(ROOT_LINK_LIST)
+    # Needed because ROOT on Mac does not use Mac conventions
+    set(CMAKE_SHARED_LIBRARY_SUFFIX .so)
 
     file(GLOB ROOT_LIBFILELIST
         LIST_DIRECTORIES false

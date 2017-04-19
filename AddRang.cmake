@@ -11,3 +11,4 @@ download_project(PROJ                rang
 add_library(rang INTERFACE)
 target_include_directories(rang INTERFACE ${rang_SOURCE_DIR}/include)
 
+add_library(rang::rang ALIAS rang) # Exported target syntax
