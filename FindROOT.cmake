@@ -242,3 +242,22 @@ else()
 endif()
 
 mark_as_advanced(ROOTCINT_EXECUTABLE GENREFLEX_EXECUTABLE) 
+
+
+# Modern add dictionary command
+# Call with the name of the output dictionary
+# Followed by sources (usually header files)
+# with an optional LinkDef.h at the end
+#
+# Add the created dictionary target to the linked libraries
+# root_add_dictionary(MyDict MyClass.h LinkDef.h)
+function(root_add_dictionary OUTNAME)
+    add_custom_command(
+        OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${OUTNAME}.cxx"
+        COMMAND "${ROOTCINT_EXECUTABLE}" -v4 -f "${CMAKE_CURRENT_BINARY_DIR}/${OUTNAME}.cxx" ${ARGN}
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        DEPENDS ${ARN}
+        )
+    add_library(${OUTNAME} STATIC "${CMAKE_CURRENT_BINARY_DIR}/${OUTNAME}.cxx")
+    target_link_libraries(${OUTNAME} PUBLIC ROOT::ROOT)
+endfunction()
