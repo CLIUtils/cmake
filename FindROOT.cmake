@@ -134,8 +134,11 @@ find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin)
 find_program(GENREFLEX_EXECUTABLE genreflex PATHS $ENV{ROOTSYS}/bin)
 find_package(GCCXML)
 
-if(EXISTS "${ROOTSYS}/cmake/modules/RootNewMacros.cmake")
+if(EXISTS "$ENV{ROOTSYS}/cmake/modules/RootNewMacros.cmake")
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{ROOTSYS}/cmake/modules)
+    include(RootNewMacros)
+elseif(EXISTS "${ROOTSYS}/cmake/modules/RootNewMacros.cmake")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ROOTSYS}/cmake/modules)
     include(RootNewMacros)
 else()
 #----------------------------------------------------------------------------
