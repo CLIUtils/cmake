@@ -1,7 +1,6 @@
 # This file should be included with include(CUDA)
 #
 # It adds:
-#   CUDA_VERSION: the CUDA VERSION
 #
 #   cuda_protect_flags(NAME LANG)
 #     Protect the flags on the target with a LANG requirement
