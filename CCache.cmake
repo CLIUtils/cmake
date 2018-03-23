@@ -1,4 +1,5 @@
 # Based on https://crascit.com/2016/04/09/using-ccache-with-cmake/
+cmake_minimum_required(VERSION 3.4)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -67,4 +68,8 @@ if(CCACHE_PROGRAM)
         set(CMAKE_CXX_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cxx")
         set(CMAKE_CUDA_COMPILER_LAUNCHER "${CMAKE_BINARY_DIR}/launch-cuda")
     endif()
+
+    message(STATUS "Using CCache")
+else()
+    message(STATUS "Not using CCache")
 endif()
