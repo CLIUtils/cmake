@@ -9,11 +9,11 @@ if(CCACHE_PROGRAM)
     set(CUDA_LAUNCHER "${CCACHE_PROGRAM}")
 
     file(WRITE "${CMAKE_BINARY_DIR}/launch-c" ""
-        "#!/bin/sh\n"
+        "#!/usr/bin/env sh\n"
         "\n"
         "# Xcode generator doesn't include the compiler as the\n"
         "# first argument, Ninja and Makefiles do. Handle both cases.\n"
-        "if [[ \"$1\" = \"${CMAKE_C_COMPILER}\" ]] ; then\n"
+        "if [ \"$1\" = \"${CMAKE_C_COMPILER}\" ] ; then\n"
         "    shift\n"
         "fi\n"
         "\n"
@@ -22,11 +22,11 @@ if(CCACHE_PROGRAM)
         )
 
     file(WRITE "${CMAKE_BINARY_DIR}/launch-cxx" ""
-        "#!/bin/sh\n"
+        "#!/usr/bin/env sh\n"
         "\n"
         "# Xcode generator doesn't include the compiler as the\n"
         "# first argument, Ninja and Makefiles do. Handle both cases.\n"
-        "if [[ \"$1\" = \"${CMAKE_CXX_COMPILER}\" ]] ; then\n"
+        "if [ \"$1\" = \"${CMAKE_CXX_COMPILER}\" ] ; then\n"
         "    shift\n"
         "fi\n"
         "\n"
@@ -36,11 +36,11 @@ if(CCACHE_PROGRAM)
 
     # Cuda support only added in CMake 3.10
     file(WRITE "${CMAKE_BINARY_DIR}/launch-cuda" ""
-        "#!/bin/sh\n"
+        "#!/usr/bin/env sh\n"
         "\n"
         "# Xcode generator doesn't include the compiler as the\n"
         "# first argument, Ninja and Makefiles do. Handle both cases.\n"
-        "if [[ \"$1\" = \"${CMAKE_CUDA_COMPILER}\" ]] ; then\n"
+        "if [ \"$1\" = \"${CMAKE_CUDA_COMPILER}\" ] ; then\n"
         "    shift\n"
         "fi\n"
         "\n"
