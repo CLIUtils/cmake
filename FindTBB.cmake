@@ -263,17 +263,20 @@ if(NOT TBB_FOUND)
   ##################################
 
   if(NOT CMAKE_VERSION VERSION_LESS 3.0 AND TBB_FOUND)
-    add_library(tbb INTERFACE)
-    add_library(TBB::tbb ALIAS tbb)
-    target_include_directories(tbb INTERFACE ${TBB_INCLUDE_DIRS})
+      add_library(TBB::tbb IMPORTED INTERFACE)
+      set_property(TARGET TBB::tbb
+          PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${TBB_INCLUDE_DIRS})
     if(TBB_LIBRARIES_RELEASE AND TBB_LIBRARIES_DEBUG)
-      target_compile_definitions(tbb INTERFACE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:TBB_USE_DEBUG=1>)
-      target_link_libraries(tbb INTERFACE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${TBB_LIBRARIES_DEBUG}> $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:>>:${TBB_LIBRARIES_RELEASE}>)
+        set_property(TARGET TBB::tbb
+            PROPERTY INTERFACE_COMPILE_DEFINITIONS $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:TBB_USE_DEBUG=1>
+            PROPERTY INTERFACE_LINK_LIBRARIES $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${TBB_LIBRARIES_DEBUG}> $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>,$<CONFIG:>>:${TBB_LIBRARIES_RELEASE}>)
     elseif(TBB_LIBRARIES_RELEASE)
-      target_link_libraries(tbb INTERFACE ${TBB_LIBRARIES_RELEASE})
+        set_property(TARGET TBB::tbb
+            PROPERTY INTERFACE_LINK_LIBRARIES ${TBB_LIBRARIES_RELEASE})
     else()
-      target_compile_definitions(tbb INTERFACE ${TBB_DEFINITIONS_DEBUG})
-      target_link_libraries(tbb INTERFACE ${TBB_LIBRARIES_DEBUG})
+        set_property(TARGET TBB::tbb
+            PROPERTY INTERFACE_COMPILE_DEFINITIONS ${TBB_DEFINITIONS_DEBUG}
+            PROPERTY INTERFACE_LINK_LIBRARIES ${TBB_LIBRARIES_DEBUG})
     endif()
   endif()
 
