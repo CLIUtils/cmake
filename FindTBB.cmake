@@ -264,6 +264,7 @@ if(NOT TBB_FOUND)
 
   if(NOT CMAKE_VERSION VERSION_LESS 3.0 AND TBB_FOUND)
     add_library(tbb INTERFACE)
+    add_library(TBB::tbb ALIAS tbb)
     target_include_directories(tbb INTERFACE ${TBB_INCLUDE_DIRS})
     if(TBB_LIBRARIES_RELEASE AND TBB_LIBRARIES_DEBUG)
       target_compile_definitions(tbb INTERFACE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:TBB_USE_DEBUG=1>)
