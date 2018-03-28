@@ -24,7 +24,9 @@ set(CUDA_KNOWN_GPU_ARCHITECTURES  "Fermi" "Kepler" "Maxwell")
 set(CUDA_COMMON_GPU_ARCHITECTURES "3.0" "3.5" "5.0")
 
 if(CMAKE_CUDA_COMPILER_LOADED) # CUDA as a language
-  set(CUDA_VERSION CMAKE_CUDA_COMPILER_VERSION)
+  if(CMAKE_CUDA_COMPILER_ID STREQUAL "NVIDIA")
+    set(CUDA_VERSION "${CMAKE_CUDA_COMPILER_VERSION}")
+  endif()
 endif()
 
 if (CUDA_VERSION VERSION_GREATER "6.5")
@@ -77,14 +79,13 @@ function(CUDA_DETECT_INSTALLED_GPUS OUT_VARIABLE)
       "}\n")
 
     if(CMAKE_CUDA_COMPILER_LOADED) # CUDA as a language
-        try_run(run_result compile_result ${PROJECT_BINARY_DIR} ${file}
-                RUN_OUTPUT_VARIABLE compute_capabilities)
-
+      try_run(run_result compile_result ${PROJECT_BINARY_DIR} ${file}
+              RUN_OUTPUT_VARIABLE compute_capabilities)
     else()
-        try_run(run_result compile_result ${PROJECT_BINARY_DIR} ${file}
-                CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${CUDA_INCLUDE_DIRS}"
-                LINK_LIBRARIES ${CUDA_LIBRARIES}
-                RUN_OUTPUT_VARIABLE compute_capabilities)
+      try_run(run_result compile_result ${PROJECT_BINARY_DIR} ${file}
+              CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${CUDA_INCLUDE_DIRS}"
+              LINK_LIBRARIES ${CUDA_LIBRARIES}
+              RUN_OUTPUT_VARIABLE compute_capabilities)
     endif()
 
     if(run_result EQUAL 0)

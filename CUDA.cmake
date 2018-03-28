@@ -38,7 +38,7 @@ function(CUDA_PROTECT_FLAGS EXISTING_TARGET)
     endif()
 endfunction()
 
-include(select_compute_arch.cmake)
+include("${CMAKE_CURRENT_LIST_DIR}/select_compute_arch.cmake")
 
 function(CUDA_DETECT_ARCH)
     set(oneValueArgs NVCC_FLAGS READABLE)
