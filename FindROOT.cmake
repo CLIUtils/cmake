@@ -81,7 +81,6 @@ if(ROOT_CONFIG_EXECUTABLE)
     set(ROOT_CORELIBS Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
 
     add_library(ROOT::Libraries INTERFACE IMPORTED)
-    add_library(ROOT::ROOT ALIAS ROOT::Libraries)
 
     set(ROOT_LIBRARIES)
     foreach(_cpt ${ROOT_ALLLIBS})
