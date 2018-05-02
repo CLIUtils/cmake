@@ -11,7 +11,7 @@
 # ROOT_LINK_FLAGS     Linker flags
 #
 # The modern CMake 3 imported targets are also created:
-# ROOT::ROOT (Most common libraries)
+# ROOT::Libraries (Most common libraries)
 # ROOT::<name> (The library with name)
 #
 # Updated by K. Smith (ksmith37@nd.edu) to properly handle
@@ -80,7 +80,8 @@ if(ROOT_CONFIG_EXECUTABLE)
 
     set(ROOT_CORELIBS Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread MultiProc)
 
-    add_library(ROOT::ROOT INTERFACE IMPORTED)
+    add_library(ROOT::Libraries INTERFACE IMPORTED)
+    add_library(ROOT::ROOT ALIAS ROOT::Libraries)
 
     set(ROOT_LIBRARIES)
     foreach(_cpt ${ROOT_ALLLIBS})
@@ -106,9 +107,9 @@ if(ROOT_CONFIG_EXECUTABLE)
       endif()
     endforeach()
 
-    set_target_properties(ROOT::ROOT PROPERTIES
+    set_target_properties(ROOT::Libraries PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${ROOT_INCLUDE_DIRS}")
-    set_target_properties(ROOT::ROOT PROPERTIES
+    set_target_properties(ROOT::Libraries PROPERTIES
         INTERFACE_LINK_LIBRARIES "${targetlist}")
     unset(targetlist)
 
@@ -262,5 +263,5 @@ function(root_add_dictionary OUTNAME)
         DEPENDS ${ARN}
         )
     add_library(${OUTNAME} STATIC "${CMAKE_CURRENT_BINARY_DIR}/${OUTNAME}.cxx")
-    target_link_libraries(${OUTNAME} PUBLIC ROOT::ROOT)
+    target_link_libraries(${OUTNAME} PUBLIC ROOT::Libraries)
 endfunction()
