@@ -1,6 +1,6 @@
 # CMake 3 Tools
 
-> Warning: These tools are being replaced by the [Modern CMake](https://github.com/CLIUtils/modern-cmake). Some of the tools are still being maintained for now, but new projects should check that repository first. 
+> Warning: These tools are being replaced by the [Modern CMake](https://github.com/CLIUtils/modern_cmake). Some of the tools are still being maintained for now, but new projects should check that repository first. 
 
 A set of [CMake] modules to assist in building code, with some tools for common general use packages and a few High Energy Physics packages. These tools are built around modern CMake (See [The Ultimate Guide to Modern CMake]), which allows clean, simple user CMake files. Although modern CMake is still a little odd in a few places, it is relatively clean and descriptive.
 
